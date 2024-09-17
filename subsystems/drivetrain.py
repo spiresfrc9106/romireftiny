@@ -32,6 +32,7 @@ class Drivetrain(commands2.Subsystem):
 
         # Set up the differential drive controller
         self.drive = wpilib.drive.DifferentialDrive(self.leftMotor, self.rightMotor)
+        self.drive.setSafetyEnabled(False) # todo Mike adjust this depending on debugging and sim
 
         # Set up the RomiGyro
         self.gyro = romi.RomiGyro()
