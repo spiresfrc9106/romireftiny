@@ -51,18 +51,12 @@ import math
 import romi
 import wpilib
 import commands2
-from robotConfig import webserverConstructorOrNone
-#from commands.arcadedrive import ArcadeDrive
-#from commands.autonomous_distance import AutonomousDistance
-#from commands.autonomous_time import AutonomousTime
 
-#from robotcontainer import RobotContainer
 from utils.signalLogging import SignalWrangler
 from utils.signalLogging import log
 from utils.crashLogger import CrashLogger
 from utils.segmentTimeTracker import SegmentTimeTracker
 from utils.robotIdentification import RobotIdentification
-from subsystems.drivetrain import Drivetrain
 
 # Uncomment these lines and set the port to the pycharm debugger to use the
 # Pycharm debug server to debug this code.
