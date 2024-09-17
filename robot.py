@@ -50,6 +50,7 @@ import math
 
 import romi
 import wpilib
+import wpilib.drive
 import commands2
 
 from utils.signalLogging import SignalWrangler
@@ -88,11 +89,6 @@ class MyRobot(commands2.TimedCommandRobot):
         # to ignore these instantiations in a method.
         # pylint: disable=attribute-defined-outside-init
 
-        # Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-        # autonomous chooser on the dashboard.
-        #self.container = RobotContainer()
-
-        #self.drivetrain = Drivetrain()
         self.onboardIO = romi.OnBoardIO(
             romi.OnBoardIO.ChannelMode.INPUT, romi.OnBoardIO.ChannelMode.INPUT
         )
@@ -103,27 +99,11 @@ class MyRobot(commands2.TimedCommandRobot):
         # Create SmartDashboard chooser for autonomous routines
         self.chooser = wpilib.SendableChooser()
 
-        """Use this method to define your button->command mappings. Buttons can be created by
-        instantiating a :class:`.GenericHID` or one of its subclasses (:class`.Joystick or
-        :class:`.XboxController`), and then passing it to a :class:`.JoystickButton`.
-        """
-
-        # Default command is arcade drive. This will run unless another command
-        # is scheduler over it
-        #self.drivetrain.setDefaultCommand(self.getArcadeDriveCommand())
-
         # Example of how to use the onboard IO
         onboardButtonA = commands2.button.Trigger(self.onboardIO.getButtonAPressed)
         onboardButtonA.onTrue(commands2.PrintCommand("Button A Pressed")).onFalse(
             commands2.PrintCommand("Button A Released")
         )
-
-        # Setup SmartDashboard options
-        #self.chooser.setDefaultOption(
-        #    "Auto Routine Distance", AutonomousDistance(self.drivetrain)
-        #)
-        #self.chooser.addOption("Auto Routine Time", AutonomousTime(self.drivetrain))
-        #wpilib.SmartDashboard.putData(self.chooser)
 
 
         # The Romi has the left and right motors set to
@@ -156,25 +136,9 @@ class MyRobot(commands2.TimedCommandRobot):
         )
         self.resetEncoders()
 
-        #self.arcadedrive = self.getArcadeDriveCommand()
-
-        # NOTE: The I/O pin functionality of the 5 exposed I/O pins depends on the hardware "overlay"
-        # that is specified when launching the wpilib-ws server on the Romi raspberry pi.
-        # By default, the following are available (listed in order from inside of the board to outside):
-        # - DIO 8 (mapped to Arduino pin 11, closest to the inside of the board)
-        # - Analog In 0 (mapped to Analog Channel 6 / Arduino Pin 4)
-        # - Analog In 1 (mapped to Analog Channel 2 / Arduino Pin 20)
-        # - PWM 2 (mapped to Arduino Pin 21)
-        # - PWM 3 (mapped to Arduino Pin 22)
-        #
-        # Your subsystem configuration should take the overlays into account
-
-
         self.rId = RobotIdentification()
         self.crashLogger = CrashLogger()
         self.stt = SegmentTimeTracker()
-
-
 
 
     def robotPeriodic(self) -> None:
@@ -183,12 +147,6 @@ class MyRobot(commands2.TimedCommandRobot):
 
         This runs after the mode specific periodic functions, but before LiveWindow and
         SmartDashboard integrated updating."""
-
-        # Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-        # commands, running already-scheduled commands, removing finished or interrupted commands,
-        # and running subsystem periodic() methods.  This must be called from the robot's periodic
-        # block in order for anything in the Command-based framework to work.
-        
 
         leftEncoderCount = self.rightEncoder.get()
         rightEncoderCount = self.leftEncoder.get()
