@@ -200,16 +200,6 @@ class MyRobot(commands2.TimedCommandRobot):
     def getAutonomousCommand(self) -> typing.Optional[commands2.Command]:
         return self.chooser.getSelected()
 
-    #def getArcadeDriveCommand(self) -> ArcadeDrive:
-    #    """Use this to pass the teleop command to the main robot class.
-    #
-    #    :returns: the command to run in teleop
-    #    """
-    #    return ArcadeDrive(
-    #        self.drivetrain,
-    #        lambda: -self.controller.getRawAxis(1), # XBox controller in "X" mode, right stick left/right
-    #        lambda: self.controller.getRawAxis(4), # XBox controller in "X" mode, left stick forward/back
-    #   )
     def resetEncoders(self) -> None:
         """Resets the drive encoders to currently read a position of 0."""
         self.leftEncoder.reset()
