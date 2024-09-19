@@ -93,6 +93,8 @@ class MyRobot(commands2.TimedCommandRobot):
 
         self.rId = RobotIdentification()
         self.crashLogger = CrashLogger()
+
+        # todo consider splitting SegmentTimeTracker into separate for robotperiodic/auto periodic/tel periodic
         self.stt = SegmentTimeTracker()
         # self.stt.doOptionalPerhapsMarks = True # Uncomment this line to turn on optional stt perhapsMark methods
         # self.stt.longLoopThresh = 0.020 # Uncomment this line adjust the stt logging time threshold in seconds
@@ -145,6 +147,11 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def autonomousPeriodic(self) -> None:
         """This function is called periodically during autonomous"""
+        self.stt.start()
+
+
+        self.stt.end()
+
 
     def teleopInit(self) -> None:
         # This makes sure that the autonomous stops running when
@@ -156,6 +163,10 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def teleopPeriodic(self) -> None:
         """This function is called periodically during operator control"""
+        self.stt.start()
+
+
+        self.stt.end()
 
     def testInit(self) -> None:
         # Cancels all running commands at the start of test mode

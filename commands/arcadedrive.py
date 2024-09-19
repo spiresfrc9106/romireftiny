@@ -13,7 +13,7 @@ from utils.signalLogging import log
 class ArcadeDrive(commands2.Command):
     def __init__(
         self,
-        drive: Drivetrain,
+        drive_train: Drivetrain,
         forward: typing.Callable[[], float],
         rotation: typing.Callable[[], float],
     ) -> None:
@@ -26,23 +26,23 @@ class ArcadeDrive(commands2.Command):
         """
         super().__init__()
 
-        self.drive = drive
+        self.drive_train = drive_train
         self.forward = forward
         self.rotation = rotation
 
-        self.addRequirements(self.drive)
+        self.addRequirements(self.drive_train)
 
     def execute(self) -> None:
         forward = self.forward()
         rotation = self.rotation()
-        self.drive.arcadeDrive(self.forward(), self.rotation())
+        self.drive_train.arcadeDrive(self.forward(), self.rotation())
 
         log("driveForwardCmd", forward, "ratio")
         log("driveRotationCmd", rotation, "ratio")
 
-        x = self.drive.getGyroAngleX()
-        y = self.drive.getGyroAngleY()
-        z = self.drive.getGyroAngleZ()
+        x = self.drive_train.getGyroAngleX()
+        y = self.drive_train.getGyroAngleY()
+        z = self.drive_train.getGyroAngleZ()
         log("driveGyroAngleX", x, "todo")
         log("driveGyroAngleY", y, "todo")
         log("driveGyroAngleZ", z, "todo")
