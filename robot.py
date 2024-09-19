@@ -152,6 +152,13 @@ class MyRobot(commands2.TimedCommandRobot):
         rightEncoderCount = self.leftEncoder.get()
         log("driveLeftEncoder", leftEncoderCount, "count")
         log("driveRightEncoder", rightEncoderCount, "count")
+        x = self.getGyroAngleX()
+        y = self.getGyroAngleY()
+        z = self.getGyroAngleZ()
+        log("driveGyroAngleX", x, "todo")
+        log("driveGyroAngleY", y, "todo")
+        log("driveGyroAngleZ", z, "todo")
+
         SignalWrangler().publishPeriodic()
 
     def disabledInit(self) -> None:
@@ -185,14 +192,6 @@ class MyRobot(commands2.TimedCommandRobot):
 
         log("driveForwardCmd", forward, "ratio")
         log("driveRotationCmd", rotation, "ratio")
-
-        x = self.getGyroAngleX()
-        y = self.getGyroAngleY()
-        z = self.getGyroAngleZ()
-        log("driveGyroAngleX", x, "todo")
-        log("driveGyroAngleY", y, "todo")
-        log("driveGyroAngleZ", z, "todo")
-
 
     def testInit(self) -> None:
         pass
