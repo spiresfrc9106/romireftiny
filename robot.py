@@ -70,6 +70,33 @@ os.environ["HALSIMWS_HOST"] = "10.0.0.2"
 os.environ["HALSIMWS_PORT"] = "3300"
 
 
+class AutoState1():
+    def __init__(self,robot, option_number):
+        self.robot = robot
+        self.state = 'start'
+        self.entered_state_time = 0
+        self.option_number = option_number
+
+    def periodic(self):
+        now = wpilib.Timer.getFPGATimestamp()
+        match self.state:
+            case 'start':
+                self.entered_state_time = wpilib.Timer.getFPGATimestamp()
+                self.state = 'drive'
+            case 'drive':
+
+                if now-self.entered_state_time>3.0:
+                    self.state = 'stop'
+                    self.robot.drive.arcadeDrive(0.0, 0)
+                else:
+                    self.robot.drive.arcadeDrive(0.5, 0)
+            case 'stop' | _:
+                self.robot.drive.arcadeDrive(0, 0)
+        print(f"state={self.state} now={now}")
+
+
+
+
 class MyRobot(commands2.TimedCommandRobot):
     """
     Command v2 robots are encouraged to inherit from TimedCommandRobot, which
@@ -97,7 +124,15 @@ class MyRobot(commands2.TimedCommandRobot):
         self.controller = wpilib.Joystick(0)
 
         # Create SmartDashboard chooser for autonomous routines
+
         self.chooser = wpilib.SendableChooser()
+        self.chooser.setDefaultOption(
+            "Auto Routine 1",AutoState1(self,1)
+        )
+        self.chooser.addOption("Auto Routine 2", AutoState1(self,2))
+        self.chooser.addOption("Auto Routine 3", AutoState1(self,3))
+        wpilib.SmartDashboard.putData("Auto choices", self.chooser)
+
 
         # Example of how to use the onboard IO
         onboardButtonA = commands2.button.Trigger(self.onboardIO.getButtonAPressed)
@@ -159,6 +194,9 @@ class MyRobot(commands2.TimedCommandRobot):
         log("driveGyroAngleY", y, "todo")
         log("driveGyroAngleZ", z, "todo")
 
+        if self.autonomousCommand is not None:
+            log("autonomousCommand", self.autonomousCommand.option_number, "int")
+
         SignalWrangler().publishPeriodic()
 
     def disabledInit(self) -> None:
@@ -169,10 +207,13 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def autonomousInit(self) -> None:
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
-        pass
+        self.autonomousCommand = self.chooser.getSelected()
+
 
     def autonomousPeriodic(self) -> None:
         """This function is called periodically during autonomous"""
+        self.autonomousCommand.periodic()
+
 
     def teleopInit(self) -> None:
         # This makes sure that the autonomous stops running when
@@ -196,8 +237,6 @@ class MyRobot(commands2.TimedCommandRobot):
     def testInit(self) -> None:
         pass
 
-    def getAutonomousCommand(self) -> typing.Optional[commands2.Command]:
-        return self.chooser.getSelected()
 
     def resetEncoders(self) -> None:
         """Resets the drive encoders to currently read a position of 0."""
