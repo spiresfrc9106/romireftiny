@@ -71,11 +71,20 @@ os.environ["HALSIMWS_PORT"] = "3300"
 
 
 class AutoState1():
-    def __init__(self,robot, option_number):
+    def __init__(self, robot, option_number):
         self.robot = robot
         self.state = 'start'
         self.entered_state_time = 0
         self.option_number = option_number
+
+        self.states = {
+            'start': 1,
+            'drive': 2,
+            'stop': 3,
+        }
+
+    def start(self):
+        self.state = 'start'
 
     def periodic(self):
         now = wpilib.Timer.getFPGATimestamp()
@@ -84,7 +93,6 @@ class AutoState1():
                 self.entered_state_time = wpilib.Timer.getFPGATimestamp()
                 self.state = 'drive'
             case 'drive':
-
                 if now-self.entered_state_time>3.0:
                     self.state = 'stop'
                     self.robot.drive.arcadeDrive(0.0, 0)
@@ -92,9 +100,13 @@ class AutoState1():
                     self.robot.drive.arcadeDrive(0.5, 0)
             case 'stop' | _:
                 self.robot.drive.arcadeDrive(0, 0)
-        print(f"state={self.state} now={now}")
+        log("autostate", self.state_to_int(), "int")
 
-
+    def state_to_int(self):
+        result = -1
+        if self.state in self.states:
+            result = self.states[self.state]
+        return result
 
 
 class MyRobot(commands2.TimedCommandRobot):
@@ -208,6 +220,7 @@ class MyRobot(commands2.TimedCommandRobot):
     def autonomousInit(self) -> None:
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
         self.autonomousCommand = self.chooser.getSelected()
+        self.autonomousCommand.start()
 
 
     def autonomousPeriodic(self) -> None:
