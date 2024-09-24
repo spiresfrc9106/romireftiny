@@ -93,7 +93,7 @@ class AutoState1():
                 self.entered_state_time = wpilib.Timer.getFPGATimestamp()
                 self.state = 'drive'
             case 'drive':
-                if now-self.entered_state_time>3.0:
+                if now-self.entered_state_time>1.0:
                     self.state = 'stop'
                     self.robot.drive.arcadeDrive(0.0, 0)
                 else:
@@ -158,11 +158,12 @@ class MyRobot(commands2.TimedCommandRobot):
         self.leftMotor = wpilib.Spark(0)
         self.leftMotor.setInverted(True)
         self.rightMotor = wpilib.Spark(1)
-        self.leftMotor.setInverted(False)
+        self.rightMotor.setInverted(False)
 
         # The Romi has onboard encoders that are hardcoded
         # to use DIO pins 4/5 and 6/7 for the left and right
         self.leftEncoder = wpilib.Encoder(4, 5)
+
         self.rightEncoder = wpilib.Encoder(6, 7)
 
         # Set up the differential drive controller
@@ -174,6 +175,8 @@ class MyRobot(commands2.TimedCommandRobot):
         # Set up the BuiltInAccelerometer
         self.accelerometer = wpilib.BuiltInAccelerometer()
 
+        self.resetEncoders()
+
         # Use inches as unit for encoder distances
         self.leftEncoder.setDistancePerPulse(
             (math.pi * self.kWheelDiameterInch) / self.kCountsPerRevolution
@@ -181,7 +184,6 @@ class MyRobot(commands2.TimedCommandRobot):
         self.rightEncoder.setDistancePerPulse(
             (math.pi * self.kWheelDiameterInch) / self.kCountsPerRevolution
         )
-        self.resetEncoders()
 
         self.rId = RobotIdentification()
         self.crashLogger = CrashLogger()
@@ -197,14 +199,18 @@ class MyRobot(commands2.TimedCommandRobot):
 
         leftEncoderCount = self.rightEncoder.get()
         rightEncoderCount = self.leftEncoder.get()
-        log("driveLeftEncoder", leftEncoderCount, "count")
-        log("driveRightEncoder", rightEncoderCount, "count")
+        log("driveLeftEncoderCount", leftEncoderCount, "counts")
+        log("driveRightEncoderCount", rightEncoderCount, "counts")
+        leftEncoderCount = self.rightEncoder.get()
+        rightEncoderCount = self.leftEncoder.get()
+        log("driveLeftEncoderDistance", self.getLeftDriveDistanceInches(), "inches")
+        log("driveRightEncoderDistance",self.getRightDriveDistanceInches(), "inches")
         x = self.getGyroAngleX()
         y = self.getGyroAngleY()
         z = self.getGyroAngleZ()
-        log("driveGyroAngleX", x, "todo")
-        log("driveGyroAngleY", y, "todo")
-        log("driveGyroAngleZ", z, "todo")
+        log("driveGyroAngleX", x, "deg")
+        log("driveGyroAngleY", y, "deg")
+        log("driveGyroAngleZ", z, "deg")
 
         if self.autonomousCommand is not None:
             log("autonomousCommand", self.autonomousCommand.option_number, "int")
@@ -249,7 +255,6 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def testInit(self) -> None:
         pass
-
 
     def resetEncoders(self) -> None:
         """Resets the drive encoders to currently read a position of 0."""
@@ -303,5 +308,12 @@ class MyRobot(commands2.TimedCommandRobot):
         :returns: The current angle of the Romi in degrees
         """
         return self.gyro.getAngleZ()
+
+    def getLeftDriveDistanceInches(self):
+        return -self.leftEncoder.getDistance()
+
+
+    def getRightDriveDistanceInches(self):
+        return -self.rightEncoder.getDistance()
 
 
